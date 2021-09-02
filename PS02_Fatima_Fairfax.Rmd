@@ -1,0 +1,198 @@
+---
+title: "PS02"
+author: Fatima Fairfax
+date: 9/4/21
+output: html_notebook
+---
+
+Problem Set 2! Data Visualization
+
+First I will start by loading the relevant packages:
+```{r}
+library(dplyr)
+library(ggplot2)
+library(readr)
+```
+
+Next I will read in the data, birth data from North Carolina:
+```{r}
+nc <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTm2WZwNBoQdZhMgot7urbtu8eG7tzAq-60ZJsQ_nupykCAcW0OXebVpHksPWyR4x8xJTVQ8KAulAFS/pub?gid=202410847&single=true&output=csv")
+```
+
+Next I'll take a peek at the data:
+```{r}
+glimpse(nc)
+```
+
+There are 13 variables (columns) and 800 observations (rows).
+
+**Exercise 1**
+The *habit* variable is a character variable and the *visits* variable is a decimal.
+
+
+Next I'll make a scatterplot looking at the weeks (length of pregnancy) against weight (birth weight of the baby):
+
+```{r}
+ggplot(data = nc, mapping = aes(x = weeks, y=weight)) +
+  geom_point()
+```
+
+Now I'm going to do the same thing but will add some labels and a title:
+```{r}
+ggplot(data = nc, mapping = aes(x=weeks, y=weight)) +
+  geom_point() +
+  labs(x="Length of Pregnancy (in weeks)", y = "Birth weight of baby (in lbs)",
+       title = "Relationship between pregnancy duration and newborn weight")
+```
+
+**Exercise 2**
+
+There is a positive relationship between these variables. As the duration of preganancy increases, the birth weight increases.
+
+**Exercise 3**
+Making a new graph with weeks on the x and 'gained' on the y with labels and a title:
+```{r}
+ggplot(data = nc, mapping = aes(x=weeks, y = gained)) +
+  geom_point() + 
+  labs(x = "Length of Pregnancy (in weeks)", y = "Weight gained by mothers during pregnancy (in lbs)",
+       title = "Relationship between pregnancy duration and mother's weight gain")
+```
+
+
+**Exercise 4**
+
+A. The argument color = premie color coded the variable 'premie' to provide a visualization for a third variable in the graph.
+
+B. 3 variables are in the plot: pregnancy duration, maternal weight gain, and whether the baby was born premature or not.
+
+C. The rough cutoff for a premature baby is 36 to 36.5 weeks.
+
+
+**Exercise 5**
+
+Here is a new scatterplot that shows mothers age on the x and birth weight of the babies on the y and color coded based on the gender of the baby.
+
+```{r}
+ggplot(data = nc, mapping = aes(x = mage, y = weight, color = gender)) +
+  geom_point() + 
+  labs(x = "Mothers Age", y = "Baby Birth Weight (in lbs)",
+       title = "Relationship of Mothers Age and Baby Weight")
+```
+
+There doesn't seem to be a strong relationship between mothers age and baby birth weight from this data. The baby birth rate does not seem to fluxuate based on the mother's age.
+
+
+Now I'm looking at histograms. Here is the distribution of pregnancy duration:
+```{r}
+ggplot(data = nc, aes(x=weeks)) +
+  geom_histogram()
+```
+
+I'm going to change the bandwidth and add colors:
+```{r}
+ggplot(data = nc, aes(x = weeks)) +
+  geom_histogram(binwidth = 1, color = "white", fill = "steelblue")
+```
+
+
+**Exercise 6**
+
+A. The y label, count, provides the number of babies born in a certain week range (the bins).
+
+B. The average length of pregnancies appear to be 48-49 weeks.
+
+C. If we changed the binwidth to 100, there would be roughly 8 cases per-bin (there are 800 observations)
+
+
+**Exercise 7**
+Now I'll make a histogram of birth weight of newborns in lbs and include a title and axis labels:
+```{r}
+ggplot(data = nc, mapping = aes(x = weight)) +
+  geom_histogram(binwidth = 1, color = "white") +
+  labs(x = "Newborn weight (in lbs)", y = "Count",
+       title = "Distribution of Newborn Weight")
+```
+
+
+Faceting allows us to look at multiples of the same plot over different categorical variables. Now I'll plot histrograms of weeks of pregnancy for mature and younger moms. 
+```{r}
+ggplot(data = nc, mapping = aes(x = weeks)) +
+  geom_histogram(binwidth = 1, color = "white", fill = "steelblue") +
+  facet_wrap(~ mature, ncol = 1)
+```
+
+
+**Exercise 8**
+
+Making a histogram of newborn birth weight split by gender of the child with a binwidth of 0.5.
+```{r}
+ggplot(nc, aes(x=weight)) +
+  geom_histogram(binwidth = 0.5, color = "white", fill = "violetred2") +
+  facet_wrap(~gender, ncol = 1)
+```
+
+It looks like males have a slightly higher average birth weight.
+
+
+Now looking at boxplots! Setting a boxplot to look at weight gained for mothers and gender:
+```{r}
+ggplot(nc, aes(x = gender, y = gained)) +
+  geom_boxplot(fill = "sienna")
+```
+
+
+**Exercise 9**
+
+Making a boxplot of weight gained by moms split by maturying of the mother with labels and a title:
+```{r}
+ggplot(nc, aes(x = mature, y = gained)) +
+  geom_boxplot(fill = "wheat3") +
+  labs(x = "Mother's Maturity", y = "Mother's Pregnancy Weight Gain",
+       title = "Relationship between Mother's Pregnancy Weight Gain and Mother's Maturity")
+```
+
+The median weight gian is larger for younger mom's.
+
+
+**Exercise 10**
+
+Now a boxplot of pregnancy duration by the habit of smoking.
+```{r}
+ggplot(nc, aes(x = habit, y = weeks)) +
+  geom_boxplot(fill = "aliceblue") +
+  labs(x = "Smoking Habit", y = "Duration of Pregnancy (in weeks)",
+       title = "Relationship of smoking and pregnancy duration")
+```
+
+There is more variation in smokers for pregnancy duration.
+
+
+**Exercise 11**
+
+Is the variable for father's age symmetrical or is it skewed? The data appears to be skewed to the left (younger).
+```{r}
+ggplot(nc, aes(x = fage)) +
+  geom_histogram(binwidth = 1, color = "white", fill = "bisque3")
+```
+
+
+**Exercise 12**
+
+Is the median birth weight of babies greater for white or non-white mothers? In this data set, the median birth weight is higher for white moms than non-white moms.
+```{r}
+ggplot(nc, aes(x = whitemom, y = weight)) +
+  geom_boxplot(fill = "burlywood1") +
+  labs(x = "Mother's Race", y = "Baby Birth Weight")
+```
+
+
+**Exercise 13**
+
+As the mother's age increase, does the duration of pregnancy decrease? In this data, that does not appear to be the case.
+```{r}
+ggplot(nc, aes(x = mage, y = weeks)) +
+  geom_point() +
+  labs(x = "Mother's Age", y = "Duration of Pregnancy (in weeks)",
+       title = "Relationship between mother's age and prgenancy duration")
+```
+
